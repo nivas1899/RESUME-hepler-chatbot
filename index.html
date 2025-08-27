@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Helper Chatbot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            /* Animated Gradient Background - Pink & Blue Theme */
+            background: linear-gradient(45deg, #fce7f3, #e0f2fe, #f5d0fe, #e0f2fe, #fce7f3);
+            background-size: 400% 400%;
+            animation: animateLines 15s ease infinite;
+        }
+        .bot-message ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin-top: 8px;
+        }
+        .bot-message li {
+            margin-bottom: 4px;
+        }
+        /* Hide scrollbar for clean look */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        .glow-border {
+             box-shadow: 0 0 15px rgba(236, 72, 153, 0.3), 0 0 30px rgba(56, 189, 248, 0.3);
+        }
+        
+        /* Styles for the animated background */
+        #background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* Moving & Twinkling Stars Animation */
+        @keyframes moveAndTwinkle {
+            0% {
+                transform: translate(0, 0) scale(0.5);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--x-end), var(--y-end)) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        .star {
+            position: absolute;
+            border-radius: 50%;
+            animation: moveAndTwinkle linear infinite;
+            /* Glow effect for the stars */
+            box-shadow: 0 0 6px 2px currentColor;
+        }
+        
+        /* Keyframes for the background color animation */
+        @keyframes animateLines {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center h-screen">
+    <!-- Animated Background Container -->
+    <div id="background-animation"></div>
+
+    <div class="w-full max-w-md mx-auto bg-white/80 backdrop-blur-lg border border-gray-200/50 rounded-2xl shadow-2xl flex flex-col h-[90vh] glow-border">
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-sky-500 to-pink-500 text-white p-4 rounded-t-2xl flex items-center shadow-lg">
+            <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mr-4 border-2 border-pink-200/50">
+                <!-- Animated Robot Icon -->
+                <svg class="h-8 w-8 text-pink-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 16L5 18C5 19.1046 5.89543 20 7 20H17C18.1046 20 19 19.1046 19 18V16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 16V20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <rect x="4" y="8" width="16" height="8" rx="2" stroke="currentColor" stroke-width="2"/>
+                    <path d="M9 4L9 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M15 4L15 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="9" cy="12" r="1" fill="currentColor">
+                        <animate attributeName="r" values="1;0.5;1" dur="3s" repeatCount="indefinite" />
+                    </circle>
+                    <circle cx="15" cy="12" r="1" fill="currentColor">
+                        <animate attributeName="r" values="1;0.5;1" dur="3s" repeatCount="indefinite" />
+                    </circle>
+                    <path d="M12 4C12.5523 4 13 3.55228 13 3C13 2.44772 12.5523 2 12 2C11.4477 2 11 2.44772 11 3C11 3.55228 11.4477 4 12 4Z" fill="currentColor">
+                        <animateTransform attributeName="transform" type="rotate" from="0 12 8" to="20 12 8" dur="1.5s" repeatCount="indefinite" yoyo="true" />
+                    </path>
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold text-white">Resume Helper</h1>
+                <p class="text-sm text-pink-100">Online</p>
+            </div>
+        </div>
+
+        <!-- Chat Messages -->
+        <div id="chat-window" class="flex-1 p-6 overflow-y-auto">
+            <!-- Bot Message Example -->
+            <div class="flex mb-4">
+                <div class="flex-shrink-0">
+                    <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                        <!-- Animated Robot Icon for messages -->
+                        <svg class="h-6 w-6 text-pink-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5 16L5 18C5 19.1046 5.89543 20 7 20H17C18.1046 20 19 19.1046 19 18V16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M12 16V20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <rect x="4" y="8" width="16" height="8" rx="2" stroke="currentColor" stroke-width="2"/>
+                            <path d="M9 4L9 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <path d="M15 4L15 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <circle cx="9" cy="12" r="1" fill="currentColor">
+                                <animate attributeName="r" values="1;0.5;1" dur="3s" repeatCount="indefinite" />
+                            </circle>
+                            <circle cx="15" cy="12" r="1" fill="currentColor">
+                                <animate attributeName="r" values="1;0.5;1" dur="3s" repeatCount="indefinite" />
+                            </circle>
+                            <path d="M12 4C12.5523 4 13 3.55228 13 3C13 2.44772 12.5523 2 12 2C11.4477 2 11 2.44772 11 3C11 3.55228 11.4477 4 12 4Z" fill="currentColor">
+                                <animateTransform attributeName="transform" type="rotate" from="0 12 8" to="20 12 8" dur="1.5s" repeatCount="indefinite" yoyo="true" />
+                            </path>
+                        </svg>
+                    </div>
+                </div>
+                <div class="ml-3 bg-gray-200 p-3 rounded-lg max-w-xs">
+                    <p class="text-sm text-gray-800">Hello there! 👋 I'm so glad you're here. Ready to make your resume shine? Let's get started! ✨</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Suggested Topics -->
+        <div class="px-4 pt-4 border-t border-gray-200">
+            <div class="flex gap-2 overflow-x-auto pb-4 no-scrollbar">
+                <button class="topic-btn">Resume Structure</button>
+                <button class="topic-btn">Resume Types</button>
+                <button class="topic-btn">Skills</button>
+                <button class="topic-btn">Experience</button>
+                <button class="topic-btn">Cloud Computing</button>
+                <button class="topic-btn">Cybersecurity</button>
+                <button class="topic-btn">Data Science</button>
+                <button class="topic-btn">Digital Marketing</button>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="p-4 bg-white border-t border-gray-200 rounded-b-2xl">
+            <div class="flex items-center">
+                <input type="text" id="user-input" placeholder="Ask about your resume..." class="flex-1 px-4 py-2 bg-gray-100 border border-gray-300 text-gray-800 rounded-full focus:outline-none focus:ring-2 focus:ring-sky-500 transition placeholder-gray-400">
+                <button id="send-button" class="ml-3 bg-sky-500 text-white p-2 rounded-full hover:bg-sky-600 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-white transition transform hover:scale-105">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get references to the HTML elements we'll be interacting with
+        const chatWindow = document.getElementById('chat-window');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+
+        // This is our simple "database" of resume-related responses.
+        const responses = {
+            "cloud computing": "☁️ Cloud skills are in huge demand! Be sure to mention specific platforms you know: <ul class='bot-message'><li><strong>Top Platforms:</strong> AWS, Microsoft Azure, Google Cloud Platform (GCP).</li><li><strong>Key Concepts:</strong> Mention things like serverless computing, containers (Docker, Kubernetes), and Infrastructure as Code (Terraform).</li><li><strong>Certifications:</strong> If you have any cloud certifications, list them prominently!</li></ul>",
+            "cybersecurity": "🛡️ Cybersecurity is a critical field. Highlight these skills on your resume: <ul class='bot-message'><li><strong>Key Areas:</strong> Network security, ethical hacking, threat intelligence, and compliance (like GDPR).</li><li><strong>Tools:</strong> Mention any security tools you've used, like Wireshark, Metasploit, or SIEM systems.</li><li><strong>Certifications:</strong> Certs like CEH or CISSP are highly valued.</li></ul>",
+            "data science": "📈 Data is king, and data science skills are highly sought after. Make sure to include: <ul class='bot-message'><li><strong>Programming Languages:</strong> Python (with libraries like Pandas, NumPy, Scikit-learn) and R are essential.</li><li><strong>Databases:</strong> Mention your experience with SQL and NoSQL databases.</li><li><strong>Techniques:</strong> List your knowledge of machine learning, statistical analysis, and data visualization.</li></ul>",
+            "digital marketing": "🌐 Digital marketing is always evolving! Key skills to list include: <ul class='bot-message'><li><strong>SEO/SEM:</strong> Search Engine Optimization and Search Engine Marketing.</li><li><strong>Content Marketing:</strong> Creating blogs, videos, and social media content.</li><li><strong>Analytics:</strong> Using tools like Google Analytics to track performance.</li><li><strong>Social Media Management:</strong> Experience with platforms like Instagram, LinkedIn, etc.</li></ul>",
+            "resume structure": "Great question! A standard resume should follow this structure from top to bottom: <ul class='bot-message'><li><strong>Contact Information:</strong> Name, Phone, Email, LinkedIn.</li><li><strong>Professional Summary:</strong> A 2-3 sentence pitch.</li><li><strong>Work Experience:</strong> In reverse chronological order.</li><li><strong>Skills:</strong> Technical and soft skills.</li><li><strong>Education:</strong> Your highest degree first.</li><li><strong>Projects (Optional):</strong> Great for showing practical skills.</li></ul>",
+            "resume types": "There are three main types of resumes, each with a different focus: <ul class='bot-message'><li><strong>Chronological:</strong> The most common type. It lists your work history from most recent to oldest. Best for people with a steady career path.</li><li><strong>Functional:</strong> Focuses on your skills and abilities rather than work history. Good for career changers or those with employment gaps.</li><li><strong>Combination:</strong> A mix of both! It highlights your skills at the top, followed by your work history. A very popular and effective choice.</li></ul>",
+            "summary pattern": "✍️ You've got it! Here’s a simple but powerful pattern you can follow. Just fill in the blanks: <br>'Highly motivated [<strong>Your Profession</strong>] with [<strong>Number</strong>] years of experience in [<strong>Your Industry</strong>]. Proven ability to [<strong>Mention a Key Achievement</strong>]. Seeking to leverage my expertise in [<strong>Another Key Skill</strong>] to help [<strong>Company Name</strong>] achieve its goals.'",
+            "demanding skills": "🚀 Absolutely! Staying current is key. Here are some of the most in-demand skills companies in India are looking for right now: <ul class='bot-message'><li><strong>Technical Skills:</strong> AI/Machine Learning, Data Science, Cloud Computing (AWS, Azure), and Cybersecurity.</li><li><strong>Soft Skills:</strong> Critical thinking, emotional intelligence, and adaptability.</li></ul>",
+            "ats": "🤖 Getting past the resume robots (ATS) is a crucial first step! Here’s how to do it: <ul class='bot-message'><li>Use standard fonts like Arial or Times New Roman.</li><li>Include keywords from the job description.</li><li>Avoid using tables, columns, or complex graphics.</li><li>Save your resume as a .docx or .pdf file.</li></ul>",
+            "quantify": "📊 Using numbers makes your achievements so much more powerful! Here's the idea: <ul class='bot-message'><li>Instead of: 'Improved sales performance.'</li><li>Try: '<strong>Increased</strong> quarterly sales by <strong>20%</strong>.'</li><li>Instead of: 'Managed a team.'</li><li>Try: '<strong>Led</strong> a team of <strong>8</strong> to launch <strong>3</strong> new products.'</li></ul>",
+            "projects": "📁 A projects section is a fantastic way to show your skills in action, especially for freshers. Be sure to include: <ul class='bot-message'><li>The project title.</li><li>A brief description of the project and its goal.</li><li>The technologies or skills you used.</li><li>The outcome or what you accomplished.</li></ul>",
+            "experience": "💼 The experience section is where you really get to show off! Here are a few tips to make it amazing: <ul class='bot-message'><li>List jobs in reverse chronological order (most recent first).</li><li>Use bullet points to describe your accomplishments.</li><li>Start each bullet point with a strong action verb.</li></ul>",
+            "skills": "✨ Your skills section is a quick snapshot of what you're great at. Here's how to approach it: <ul class='bot-message'><li>Create separate categories for 'Technical Skills' and 'Soft Skills'.</li><li>Be specific (e.g., instead of 'Programming', list 'Python, Java, C++').</li><li>Only list skills you are truly proficient in.</li></ul>",
+            "hello": "Hello there! 👋 I'm so glad you're here. Ready to make your resume shine? Let's get started!",
+            "hi": "Hi! 😊 It's great to see you. What part of your resume can I help you with today? I'm here to support you.",
+            "help": "Of course, I'd love to help! 🤗 Think of me as your personal resume coach. You can ask me about anything, like 'experience', 'skills', or 'demanding skills'.",
+            "bye": "It was great working with you! 👋 Best of luck with your job search—you've got this! Come back anytime you need a hand.",
+            "default": "🤔 That's a great question, but I'm not quite sure how to answer it yet. Could we try focusing on a specific resume topic like 'skills' or 'projects'? I'm still learning!"
+        };
+
+        // Function to add a message to the chat window
+        function addMessage(message, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('flex', 'mb-4', 'items-end');
+
+            if (sender === 'user') {
+                // User message styling
+                messageDiv.classList.add('justify-end');
+                messageDiv.innerHTML = `
+                    <div class="mr-3 bg-sky-500 text-white p-3 rounded-lg max-w-xs">
+                        <p class="text-sm">${message}</p>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Bot message styling
+                messageDiv.innerHTML = `
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                            <!-- Animated Robot Icon for messages -->
+                            <svg class="h-6 w-6 text-pink-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 16L5 18C5 19.1046 5.89543 20 7 20H17C18.1046 20 19 19.1046 19 18V16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M12 16V20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <rect x="4" y="8" width="16" height="8" rx="2" stroke="currentColor" stroke-width="2"/>
+                                <path d="M9 4L9 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M15 4L15 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <circle cx="9" cy="12" r="1" fill="currentColor">
+                                    <animate attributeName="r" values="1;0.5;1" dur="3s" repeatCount="indefinite" />
+                                </circle>
+                                <circle cx="15" cy="12" r="1" fill="currentColor">
+                                    <animate attributeName="r" values="1;0.5;1" dur="3s" repeatCount="indefinite" />
+                                </circle>
+                                <path d="M12 4C12.5523 4 13 3.55228 13 3C13 2.44772 12.5523 2 12 2C11.4477 2 11 2.44772 11 3C11 3.55228 11.4477 4 12 4Z" fill="currentColor">
+                                    <animateTransform attributeName="transform" type="rotate" from="0 12 8" to="20 12 8" dur="1.5s" repeatCount="indefinite" yoyo="true" />
+                                </path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-3 bg-gray-200 p-3 rounded-lg max-w-xs">
+                        <p class="text-sm text-gray-800">${message}</p>
+                    </div>
+                `;
+            }
+
+            chatWindow.appendChild(messageDiv);
+            // Scroll to the bottom of the chat window to show the latest message
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        // Function to get a response from the bot
+        function getBotResponse(userMessage) {
+            const lowerCaseMessage = userMessage.toLowerCase();
+            
+            // Find a keyword in the user's message that matches our responses
+            for (const keyword in responses) {
+                if (lowerCaseMessage.includes(keyword)) {
+                    return responses[keyword];
+                }
+            }
+            
+            // If no keyword is found, return the default response
+            return responses['default'];
+        }
+
+        // Function to handle sending a message from the input box
+        function sendMessage() {
+            const userMessage = userInput.value.trim();
+            if (userMessage) {
+                addMessage(userMessage, 'user');
+                userInput.value = '';
+                setTimeout(() => {
+                    const botResponse = getBotResponse(userMessage);
+                    addMessage(botResponse, 'bot');
+                }, 500);
+            }
+        }
+
+        // Function to handle clicks on topic buttons
+        function handleTopicClick(event) {
+            const topic = event.target.innerText;
+            addMessage(topic, 'user');
+            setTimeout(() => {
+                const botResponse = getBotResponse(topic);
+                addMessage(botResponse, 'bot');
+            }, 500);
+        }
+
+        // Event listener for the send button
+        sendButton.addEventListener('click', sendMessage);
+
+        // Event listener for pressing "Enter" in the input field
+        userInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Add event listeners to the topic buttons
+        const topicButtons = document.querySelectorAll('.topic-btn');
+        topicButtons.forEach(button => {
+            button.addEventListener('click', handleTopicClick);
+        });
+
+        // Add some styling for the topic buttons
+        const style = document.createElement('style');
+        style.innerHTML = `
+            .topic-btn {
+                background-color: #e0f2fe;
+                color: #0369a1;
+                padding: 6px 12px;
+                border-radius: 9999px;
+                font-size: 0.875rem;
+                font-weight: 500;
+                border: 1px solid #bae6fd;
+                transition: all 0.2s;
+                cursor: pointer;
+                flex-shrink: 0;
+                white-space: nowrap;
+            }
+            .topic-btn:hover {
+                background-color: #cffafe;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // JavaScript to generate animated background stars
+        function createStars() {
+            const container = document.getElementById('background-animation');
+            const starCount = 150; // Increased star count
+            const colors = ['#ec4899', '#3b82f6', '#f472b6', '#60a5fa']; // Vibrant Pink & Blue
+
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                const size = Math.random() * 4 + 3; // Random size (3px to 7px)
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.left = `${Math.random() * 100}%`;
+                
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                star.style.backgroundColor = color;
+                star.style.setProperty('color', color); // For the box-shadow glow
+                
+                const duration = Math.random() * 8 + 8; // Random duration (8s to 16s)
+                const delay = Math.random() * 10; // Random delay
+                star.style.animationDuration = `${duration}s`;
+                star.style.animationDelay = `${delay}s`;
+                
+                // Set random end positions for movement
+                const xEnd = (Math.random() * 200 - 100) + 'px';
+                const yEnd = (Math.random() * 200 - 100) + 'px';
+                star.style.setProperty('--x-end', xEnd);
+                star.style.setProperty('--y-end', yEnd);
+                
+                container.appendChild(star);
+            }
+        }
+
+        createStars();
+    </script>
+</body>
+</html>
